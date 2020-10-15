@@ -11,9 +11,9 @@ contract ERC20 is Ownable {
     
     mapping (address => mapping (address => uint)) private _allowances;
     
-    //mapping (address => uint) private _valuesOfAllowances;
-
-    event TransferSuccessfulEvent (address sender, uint amountTransferred, address recipient);
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+    
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     
     event TransferFromSuccessfulEvent (address sender, uint amountTransferred, address recipient, address addressThatIsTransferring);
 
@@ -71,27 +71,28 @@ contract ERC20 is Ownable {
             success = false;
         }
         else {
-        success = true;
+            success = true;
         }    
         
         if (success == false) {
-        revert();
+            revert();
         }
         else {
-            emit TransferSuccessfulEvent (msg.sender, amount, recipientAddress);
+            emit Transfer (msg.sender, recipientAddress, amount);
             return success;
         }
     }
     
     function approve(address _spender, uint256 _value) public returns (bool success) {
         require (_value <= _balances[msg.sender]); 
+        
+        _allowances[msg.sender][_spender] = 0;
         _allowances[msg.sender][_spender] = _value;
         
+        emit Approval (msg.sender, _spender, _value);
         success = true;
-        
         return success;
     }
-    
     
     function allowance(address _owner, address _spender) public view returns (uint256 remaining) {
         return _allowances[_owner][_spender];
@@ -132,9 +133,9 @@ contract ERC20 is Ownable {
             revert();
         }
         else {
+            emit Transfer (senderAddress, recipientAddress, amount);
             emit TransferFromSuccessfulEvent (senderAddress, amount, recipientAddress, msg.sender);
             return success;
         }
-        
     }
 }
