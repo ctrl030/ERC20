@@ -46,14 +46,16 @@ contract ERC20 is Ownable {
 
     function mint(address accountToBeMintedTo, uint256 amount) public onlyOwner{
         require (amount > 0);
+        require (accountToBeMintedTo != address(0));
+
         _balances[accountToBeMintedTo] += amount;
         _totalSupply += amount;
     }
 
     function transfer(address recipientAddress, uint amount) public returns (bool success) {
-
         require (amount <= _balances[msg.sender]);
         require (amount >= 0);
+        require (recipientAddress != address(0));
        
         uint balanceBeforeSending;
         uint balanceBeforeReceiving;
@@ -99,11 +101,11 @@ contract ERC20 is Ownable {
     }
     
     function transferFrom (address senderAddress, address recipientAddress, uint amount) public returns (bool success) {
-        
-        require (amount <= _allowances[senderAddress][msg.sender]); 
-        
+        require (amount <= _allowances[senderAddress][msg.sender]);        
         require (amount <= _balances[senderAddress]);
         require (amount >= 0);
+        require (recipientAddress != address(0));
+        require (senderAddress != address(0));
        
         uint balanceBeforeSending;
         uint balanceBeforeReceiving;
